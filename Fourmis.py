@@ -16,12 +16,15 @@ class Fourmis(Thread):
         self.graphe = graphe
         self.type = type
         self.roadsTraveled = []
+        self.roadsForbidden = []
+        self.noeudsParcourus = []
+        self.noeudsParcourus.append(self.noeudActuel)
 
     '''
         to string de la classe
     '''
     def __str__(self):
-        return "Fourmis {}".format(Thread.getName(self))
+        return "Fourmis {} {}".format(self.type,Thread.getName(self))
 
     '''
         Méthode pour avancer
@@ -30,14 +33,20 @@ class Fourmis(Thread):
         road = self.selectRoad()
         if road != None:
             if road.getDebut()==self.noeudActuel:
-                self.nextStep = road.getArrive()
+                nextStep = road.getArrive()
             else:
-                self.nextStep = road.getDebut()
-            self.noeudActuel = self.nextStep
-            self.chemin = self.chemin+" "+self.nextStep
-            print(str(self)+" "+str(road))
-            self.roadsTraveled.append(road)
-            sleep(road.getMetrique()*0.1)
+                nextStep = road.getDebut()
+            if nextStep not in self.noeudsParcourus:
+                self.noeudActuel = nextStep
+                self.noeudsParcourus.append(nextStep)
+                self.chemin = self.chemin+" "+nextStep
+                #print(str(self)+" "+str(road))
+                self.roadsTraveled.append(road)
+                sleep(road.getMetrique()*0.1)
+            else:
+                # Debug self.chemin = self.chemin+" "+nextStep
+                road = self.backward()
+                self.roadsForbidden.append(road)
 
     def backward(self):
         road = self.roadsTraveled.pop()
@@ -48,13 +57,14 @@ class Fourmis(Thread):
                 self.nextStep = road.getDebut()
             self.noeudActuel = self.nextStep
             self.chemin = self.chemin+" "+self.nextStep
-            print(str(self)+" "+str(road))
             road.addPheromones()
+            #print(str(self)+" "+str(road))
             sleep(road.getMetrique()*0.1)
+            return road
 
 
     def selectRoad(self):
-        roads = self.graphe.getRoads(self.noeudActuel, self.roadsTraveled)
+        roads = self.graphe.getRoads(self.noeudActuel, self.roadsTraveled+self.roadsForbidden)
         numerateur = []
         denominateur = 0
         for i in range(0, len(roads)):
@@ -75,7 +85,7 @@ class Fourmis(Thread):
     def run(self):
         while self.noeudActuel != self.noeudDestination:
             self.forward()
-        print(str(self)+" "+self.chemin)
+        #print(str(self)+" "+self.chemin)
         while self.noeudActuel != self.noeudDepart:
             self.backward()
         print(str(self)+" "+self.chemin)

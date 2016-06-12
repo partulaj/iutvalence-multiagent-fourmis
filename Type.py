@@ -13,3 +13,6 @@ class Type():
 
     def getBeta(self):
         return self.beta
+
+    def __str__(self):
+        return self.type

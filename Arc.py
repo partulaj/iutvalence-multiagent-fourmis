@@ -68,4 +68,4 @@ class Arc(Thread):
     def evaporationPheromone(self):
         if (self.pheromone>MIN_PHEROMONE):
             self.pheromone= self.pheromone*0.95
-            print("Evaporation : "+str(self.pheromone))
+            print(str(self)+" Evaporation de 5%")

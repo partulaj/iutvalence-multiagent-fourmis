@@ -16,9 +16,15 @@ if __name__ == '__main__':
     graphe.getArc("A","N").setMetrique(5)
 
     fourmis=[]
-
-    for i in range(0,10):
+    for i in range(0,5):
         fourmis.append(Fourmis(graphe, Type('Explorer')))
 
-    for i in range(0,10):
+    for i in range(0,5):
+        fourmis[i].start()
+        fourmis[i].join()
+    fourmis.clear()
+
+    for i in range(0,100):
+       fourmis.append(Fourmis(graphe, Type('Follower')))
+    for i in range(0,100):
         fourmis[i].start()
